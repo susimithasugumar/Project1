@@ -1,0 +1,95 @@
+/********************************************************************************************
+@Name                HAConnectCaseDatatableHomeController
+@Author              susimitha
+@Date                28.10.2021
+@Description         fetch knowledge article 
+********************************************************************************************
+Modification log
+Version          Developer           Date              Description
+1.0             susimitha          29.12.2021         Knowledge records
+********************************************************************************************/
+/*===========================================================================================================
+Function             params                                       Description
+fetchrecord          no param									It get the user created case in decending,order by External Status field
+fetchContact         sortField,isAsc                            It sort the particular user selected column based on asc or desc
+                         
+=============================================================================================================*/
+
+
+
+
+public class HAConnectCaseDatatableHomeController {
+    
+    @AuraEnabled
+    public static list < Case > fetchrecord() {
+        String userId = UserInfo.getUserID();
+        
+        String sSoql = 'SELECT CaseNumber, Status, Subject, Priority, Topic__c,ownerid,External_status__c,CreatedDate From Case Where CreatedById =:userId order by External_status__c, CreatedDate DESC Limit 5 ' ;
+        list <Case> lstResult;
+        
+       // try {
+            system.debug('The query is' + sSoql);
+            
+            lstResult = Database.query(sSoql);
+            List < Case > returnCaseList = new List < Case > ();
+            
+            for (Case c: lstResult) {
+                returnCaseList.add(c);
+                
+            }
+            return returnCaseList;
+            
+      //  }
+      //  catch (Exception ex) {
+            
+       //     return null;
+       // }
+    }
+    
+    @AuraEnabled
+    public static list < Case > fetchContact(String sortField, boolean isAsc) {
+        String userId = UserInfo.getUserID();
+        
+        String sSoql = 'SELECT CaseNumber, Status, Subject, Priority, Topic__c,ownerid,External_status__c,CreatedDate ' ;
+        sSoql += 'From Case ';
+        
+        sSoql=sSoql+'where CreatedById =:userId ';
+        
+        system.debug('sortField-->' + sortField);
+        
+        if (sortField != '') {
+            sSoql += ' order by ' + sortField;
+            
+            
+            if (isAsc) {
+                sSoql += ' asc';
+            } else {
+                sSoql += ' desc';
+            }
+        }
+        
+        sSoql += ' LIMIT 5';
+        
+        System.debug('@Developer -->sSoql:' + sSoql);
+        list <Case> lstResult;
+        
+     //   try {
+            system.debug('The query is' + sSoql);
+            
+            lstResult = Database.query(sSoql);
+            List < Case > returnConList = new List < Case > ();
+            
+            for (Case c: lstResult) {
+                returnConList.add(c);
+                
+            }
+            return returnConList;
+            
+       /* } 
+        catch (Exception ex) {
+            
+            return null;
+        }*/
+    }
+    
+}
